@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify email</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #111111;
+        background-image: linear-gradient(
+          32deg,
+          rgba(8, 8, 8, 0.74) 30px,
+          transparent
+        );
+        background-size: 60px 60px;
+        background-position: -5px -5px;
+      }
+      .divr {
+        width: 50%;
+        height: 20vh;
+        display: grid;
+        place-items: center;
+        background-color: red;
+        color: black;
+        font-size: 1.2em;
+      }
+      .divg {
+        background-color: green;
+        width: 50%;
+        height: 20vh;
+        display: grid;
+        place-items: center;
+        font-size: 1.2em;
+        color: black;
+      }
+      .display {
+        display: none;
+      }
+      .login {
+        text-decoration: none;
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="div">
+      <h1>hi bro</h1>
+      <a href="http://localhost:3000/login" class="display">Verify</a>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const message = params.get("message");
+      const status = params.get("status");
+      const h1 = document.querySelector("h1");
+      const div = document.getElementById("div");
+      const a = document.querySelector("a");
+      const id = params.get("id");
+
+      if (status === "success") {
+        div.classList.add("divg");
+        h1.textContent = message;
+        a.classList.remove("display");
+        a.classList.add("login");
+      } else if (status === "error") {
+        div.classList.add("divr");
+        h1.textContent = message;
+      }
+    </script>
+  </body>
+</html>

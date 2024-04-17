@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify email</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #111111;
+        background-image: linear-gradient(
+          32deg,
+          rgba(8, 8, 8, 0.74) 30px,
+          transparent
+        );
+        background-size: 60px 60px;
+        background-position: -5px -5px;
+      }
+      .divr {
+        width: 50%;
+        height: 20vh;
+        display: grid;
+        place-items: center;
+        background-color: red;
+        color: black;
+        font-size: 1.2em;
+      }
+      .divg {
+        background-color: green;
+        width: 50%;
+        height: 20vh;
+        display: grid;
+        place-items: center;
+        font-size: 1.2em;
+        color: black;
+      }
+      .display {
+        display: none;
+      }
+      .login-box {
+        width: 30%;
+        padding: 40px;
+        display: grid;
+        place-items: center;
+        background: rgba(24, 20, 20, 0.987);
+        box-sizing: border-box;
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .login-box .user-box {
+        position: relative;
+      }
+
+      .login-box .user-box input {
+        width: 100%;
+        padding: 10px 0;
+        font-size: 16px;
+        color: #fff;
+        margin-bottom: 30px;
+        border: none;
+        border-bottom: 1px solid #fff;
+        outline: none;
+        background: transparent;
+      }
+
+      .login-box .user-box label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: 10px 0;
+        font-size: 16px;
+        color: #fff;
+        pointer-events: none;
+        transition: 0.5s;
+      }
+
+      .login-box .user-box input:focus ~ label,
+      .login-box .user-box input:valid ~ label {
+        top: -20px;
+        left: 0;
+        color: #bdb8b8;
+        font-size: 12px;
+      }
+
+      .login-box form a {
+        position: relative;
+        display: inline-block;
+        padding: 10px 20px;
+        color: #ffffff;
+        font-size: 16px;
+        text-decoration: none;
+        text-transform: uppercase;
+        overflow: hidden;
+        transition: 0.5s;
+        margin-top: 40px;
+        letter-spacing: 4px;
+      }
+
+      .login-box a:hover {
+        background: #03f40f;
+        color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px #03f40f, 0 0 25px #03f40f, 0 0 50px #03f40f,
+          0 0 100px #03f40f;
+      }
+      button {
+        background-color: transparent;
+        border: none;
+      }
+
+      .login-box a span {
+        position: absolute;
+        display: block;
+      }
+
+      @keyframes btn-anim1 {
+        0% {
+          left: -100%;
+        }
+
+        50%,
+        100% {
+          left: 100%;
+        }
+      }
+
+      .login-box a span:nth-child(1) {
+        bottom: 2px;
+        left: -100%;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #03f40f);
+        animation: btn-anim1 2s linear infinite;
+      }
+      #myModal {
+        width: 40%;
+        background-color: #fff;
+        height: 20vh;
+        color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="div">
+      <h1>hi bro</h1>
+    </div>
+
+    <div class="display" id="dis">
+      <form>
+        <div class="user-box">
+          <input type="password" name="password" required="" />
+          <label>password</label>
+        </div>
+        <div class="user-box">
+          <input type="password" name="conf" required="" />
+          <label>confirm password</label>
+        </div>
+        <button type="submit">SEND</button>
+      </form>
+      <h1 id="error"></h1>
+    </div>
+    <div id="myModal" class="display">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p id="modal-message">Password reset successfully!</p>
+        <button id="redirectButton">Go to Another Page</button>
+      </div>
+    </div>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+
+      const status = params.get("status");
+      const err = document.getElementById("error");
+      const h1 = document.querySelector("h1");
+      const div = document.getElementById("div");
+      const userId = params.get("id");
+      const email = params.get("email");
+      const dis = document.getElementById("dis");
+      const form = document.querySelector("form");
+      const modal = document.getElementById("myModal");
+      const modalMessage = document.getElementById("modal-message");
+      const redirectButton = document.getElementById("redirectButton");
+
+      const closeButton = document.querySelector(".close");
+      closeButton.onclick = function () {
+        modal.style.display = "none";
+        dis.classList.remove("display");
+        dis.classList.add("login-box");
+      };
+
+      // Redirect to another page when the redirect button is clicked
+      redirectButton.onclick = function () {
+        window.location.href = "http://localhost:3000/login"; // Change "/another-page" to your desired URL
+      };
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent the default form submission behavior
+
+        // Get form data
+        const formData = new FormData(form);
+
+        // Create data object
+        const data = {
+          password: formData.get("password"), // Retrieve value of input field with name "password"
+          conf: formData.get("conf"), // Retrieve value of input field with name "conf"
+          userId: userId,
+          email: email,
+        };
+
+        try {
+          // Send POST request
+          const response = await fetch(
+            "http://localhost:3000/users/resetpassword",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json", // Set content type to JSON
+              },
+              body: JSON.stringify(data), // Convert data object to JSON string
+            }
+          );
+
+          // Check if request was successful
+          if (response.ok) {
+            // Handle success
+            modal.style.display = "block";
+            modalMessage.textContent = "Password reset successfully!";
+            dis.classList.remove("login-box");
+            dis.classList.add("display");
+            // Redirect or display success message
+          } else {
+            const errorMessage = await response.text();
+            alert(errorMessage); // Display error message
+          }
+        } catch (error) {
+          console.error("An error occurred:", error);
+          alert("An error occurred. Please try again.");
+        }
+      });
+
+      if (status === "success") {
+        div.classList.add("display");
+
+        dis.classList.remove("display");
+        dis.classList.add("login-box");
+      } else if (status === "error") {
+        div.classList.add("divr");
+        h1.textContent = message;
+        dis.classList.remove("login-box");
+        dis.classList.add("display");
+      }
+    </script>
+  </body>
+</html>
